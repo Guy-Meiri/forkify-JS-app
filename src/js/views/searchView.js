@@ -70,7 +70,15 @@ const renderPagingButtons = (page, numResults, resPerPage) => {
 
 };
 
-export const renderResults = (recipes, page = 2, resPerPage = 10) => {
+export const highlightSelected = id =>{
+
+    const resArr = Array.from(document.querySelectorAll('.results__link'));
+    resArr.forEach(el => {
+        el.classList.remove('results__link--active');
+    })
+    document.querySelector(`a[href="#${id}"]`).classList.add('results__link--active');
+};
+export const renderResults = (recipes, page = 1, resPerPage = 10) => {
     //render results of current page
     const start = (page - 1) * resPerPage;
     const end = start + resPerPage;
