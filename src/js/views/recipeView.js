@@ -2,6 +2,30 @@
 import { elements } from './base';
 import {Fraction} from 'fractional';
 
+
+const formatCount = count => {
+    //console.log("in format count1");
+    if (count) {
+        //console.log("in format count2");
+        //return count.toFixed(2);
+        // count = 2.5 --> 5/2 --> 2 1/2
+        // count = 0.5 --> 1/2
+        const newCount = Math.round(count * 10000) / 10000;
+        const [int, dec] = newCount.toString().split('.').map(el => parseInt(el, 10));
+
+        if (!dec) return newCount;
+
+        if (int === 0) {
+            const fr = new Fraction(newCount);
+            return `${fr.numerator}/${fr.denominator}`;
+        } else {
+            const fr = new Fraction(newCount - int);
+            return `${int} ${fr.numerator}/${fr.denominator}`;
+        }
+    }
+    return '?';
+};
+
 const createIngredient = ingredient => `
 <li class="recipe__item">
 <svg class="recipe__icon">
@@ -15,21 +39,6 @@ const createIngredient = ingredient => `
 </li>
 `;
 
-const formatCount = count => {
-    if(count){
-        const [int, dec] = count.toString().split('.').map(el => parseInt(el,10));
-
-        if(!dec) return count;
-        if(int === 0){
-            const frac = new Fraction(count);
-            return `${(frac.numerator).toFixed(0)}/${(frac.denominator).toFixed(0)}`;
-        }else{
-            const frac = new Fraction(count-int);
-            return `${int} ${(frac.numerator).toFixed(0)}/${(frac.denominator).toFixed(0)}`;
-        }
-    }
-    return '?';
-};
 
 export const clearRecipe = () => {
     elements.recipe.innerHTML = '';
@@ -108,4 +117,15 @@ export const renderRecipe = (recipe, isLiked = false) => {
         </div>
     `;
     elements.recipe.insertAdjacentHTML('afterbegin', markup);
+};
+
+export const updateServingsIngredients = recipe => {
+    document.querySelector('.recipe__info-data--people').textContent = recipe.servings;
+
+    const currIngredients = Array.from(document.querySelectorAll('.recipe__count'));
+    currIngredients.forEach((el, i) => {
+        // console.log(el);
+        // console.log(recipe.ingredients[i].count + '\n------------');
+        el.textContent = formatCount(recipe.ingredients[i].count);
+    });
 };
